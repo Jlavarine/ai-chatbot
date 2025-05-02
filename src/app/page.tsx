@@ -1,15 +1,16 @@
-// src/app/page.tsx
 "use client";
 
 import { FormEvent, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
-
-type Message = {
-  role: "user" | "assistant";
-  content: string;
-};
+import { MessageList } from "../components/MessageList";
+import type { Message } from "../components/MessageBubble";
 
 export default function Home() {
+  const MODEL_OPTIONS = [
+    "google/gemma-2b-it",
+    "mistralai/Mistral-7B-Instruct-v0.2"
+  ];
+  const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, setIsPending] = useState(false);
@@ -18,38 +19,68 @@ export default function Home() {
     e.preventDefault();
     if (!prompt.trim()) return;
 
-    // Add user message
-    const newMsgs = [...messages, { role: "user", content: prompt }];
-    setMessages(newMsgs);
+    const history = [...messages, { role: "user", content: prompt }];
+    setMessages(history);
     setPrompt("");
     setIsPending(true);
 
     const res = await fetch("/api/chat", {
       method: "POST",
-      body: JSON.stringify({ messages: newMsgs }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ messages: history, model: selectedModel }),
     });
-    if (!res.body) return;
 
-    // Stream the assistant’s reply
+    if (!res.ok || !res.body) {
+      console.error("Chat API error:", await res.text());
+      setIsPending(false);
+      return;
+    }
+
     ChatCompletionStream.fromReadableStream(res.body)
-      .on("content", (delta, full) => {
-        setMessages((msgs) => {
-          const last = msgs[msgs.length - 1];
-          if (last.role !== "assistant") {
-            return [...msgs, { role: "assistant", content: full }];
+      .on("content", (_delta, full) => {
+        setMessages((prev) => {
+          const bot: Message = {
+            role: "assistant",
+            content: full,
+            model: selectedModel,
+          };
+          const last = prev[prev.length - 1];
+          if (last.role === "assistant") {
+            return [...prev.slice(0, -1), bot];
           }
-          return [
-            ...msgs.slice(0, -1),
-            { role: "assistant", content: full },
-          ];
+          return [...prev, bot];
         });
       })
-      .on("end", () => setIsPending(false));
+      .on("end", () => {
+        setIsPending(false);
+      });
   }
 
   return (
-    <main className="p-6 max-w-xl mx-auto">
-      <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
+    <main className="flex flex-col h-screen p-6 max-w-xl mx-auto">
+      <div className="mb-4 flex items-center gap-2">
+        <label htmlFor="model" className="font-semibold">
+          Model:
+        </label>
+        <select
+          id="model"
+          value={selectedModel}
+          onChange={(e) => setSelectedModel(e.target.value)}
+          className="border rounded p-1 flex-1"
+        >
+          {MODEL_OPTIONS.map((m) => (
+            <option key={m} value={m}>
+              {m}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="flex-1">
+        <MessageList messages={messages} />
+      </div>
+
+      <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
         <input
           className="flex-1 border rounded p-2"
           placeholder="Say something…"
@@ -65,22 +96,6 @@ export default function Home() {
           {isPending ? "…" : "Send"}
         </button>
       </form>
-
-      <div className="space-y-3">
-        {messages.map((m, i) => (
-          <div
-            key={i}
-            className={
-              m.role === "user"
-                ? "text-right"
-                : "text-left italic text-gray-700"
-            }
-          >
-            <strong>{m.role === "user" ? "You:" : "Bot:"}</strong>{" "}
-            {m.content}
-          </div>
-        ))}
-      </div>
     </main>
   );
 }
