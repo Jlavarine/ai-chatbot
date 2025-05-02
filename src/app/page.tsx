@@ -76,7 +76,7 @@ export default function Home() {
         </select>
       </div>
 
-      <div className="flex-1">
+      <div className="flex-1 overflow-auto">
         <MessageList messages={messages} />
       </div>
 
