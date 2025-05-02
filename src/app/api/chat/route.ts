@@ -11,7 +11,7 @@ export async function POST(request: Request) {
   };
 
   const res = await together.chat.completions.create({
-    model: "meta-llama/Meta-Llama-3.1-8B-Instruct-Turbo",
+    model: "mistralai/Mistral-7B-Instruct-v0.2",
     messages,
     stream: true,
   });
