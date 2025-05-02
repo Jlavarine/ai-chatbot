@@ -74,6 +74,13 @@ export default function Home() {
             </option>
           ))}
         </select>
+        <button
+          type="button"
+          onClick={() => setMessages([])}
+          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+        >
+          Clear
+        </button>
       </div>
 
       <div className="flex-1 overflow-auto">
