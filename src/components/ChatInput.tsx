@@ -6,6 +6,7 @@ interface ChatInputProps {
   prompt: string;
   onPromptChange: (s: string) => void;
   onSubmit: (e: FormEvent) => void;
+  onClear: () => void;
   isPending: boolean;
   inputRef: RefObject<HTMLInputElement>;
 }
@@ -16,6 +17,7 @@ export const ChatInput: FC<ChatInputProps> = ({
   onSubmit,
   isPending,
   inputRef,
+  onClear
 }) => (
   <form
     onSubmit={onSubmit}
@@ -44,6 +46,14 @@ export const ChatInput: FC<ChatInputProps> = ({
       aria-label="Send message"
     >
       {isPending ? "…" : "Send"}
+    </button>
+    <button
+      type="button"
+      onClick={onClear}
+      className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
+      aria-label="Clear conversation"
+    >
+      Clear chat
     </button>
   </form>
 );

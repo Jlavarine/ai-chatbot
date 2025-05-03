@@ -10,7 +10,7 @@ import { ChatInput } from "@/components/ChatInput";
 
 const MODEL_OPTIONS = [
   "mistralai/Mistral-7B-Instruct-v0.2",
-  "google/gemma-2b-it"
+  "meta-llama/Llama-3.2-11B-Vision-Instruct-Turbo"
 ];
 
 const DEFAULT_SUGGESTIONS = [
@@ -32,7 +32,7 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null!);
 
   useEffect(() => {
-    if(!isPending) {
+    if (!isPending) {
       inputRef.current?.focus();
     }
   }, [isPending]);
@@ -96,11 +96,11 @@ export default function Home() {
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     sendMessage(prompt);
-  },[prompt, sendMessage])
+  }, [prompt, sendMessage])
 
   const handlePickSuggestion = useCallback((text: string) => {
     sendMessage(text);
-  },[sendMessage])
+  }, [sendMessage])
 
   const clearConversation = useCallback(() => {
     setMessages([]);
@@ -113,13 +113,14 @@ export default function Home() {
         modelOptions={MODEL_OPTIONS}
         selectedModel={selectedModel}
         onChangeModel={setSelectedModel}
-        onClear={clearConversation}
       />
 
       {messages.length === 0 &&
         <div>
-          <h1 className="text-2xl font-bold mb-1">Hello there!</h1>
-          <p className="text-gray-500 mb-4">How can I help you today?</p>
+          <div className="bg-gray-100 text-gray-900 p-4 rounded-xl shadow-sm max-w-lg">
+            <h1>Hello there!</h1>
+            <h2>How can I help you today?</h2>
+          </div>
         </div>
       }
 
@@ -148,13 +149,14 @@ export default function Home() {
           </div>
         )}
         <ChatInput
-        prompt={prompt}
-        onPromptChange={setPrompt}
-        onSubmit={handleSubmit}
-        isPending={isPending}
-        inputRef={inputRef}
-      />
-        
+          prompt={prompt}
+          onClear={clearConversation}
+          onPromptChange={setPrompt}
+          onSubmit={handleSubmit}
+          isPending={isPending}
+          inputRef={inputRef}
+        />
+
       </div>
     </main>
   );
