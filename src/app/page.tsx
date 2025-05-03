@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { FormEvent, useState, useRef, useEffect } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 import { MessageList } from "../components/MessageList";
 import type { Message } from "../components/MessageBubble";
@@ -23,6 +23,12 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, setIsPending] = useState(false);
 
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
+
   async function sendMessage(text: string) {
     if (!text.trim()) return;
 
@@ -40,6 +46,7 @@ export default function Home() {
     if (!res.ok || !res.body) {
       console.error("Chat API error:", await res.text());
       setIsPending(false);
+      inputRef.current?.focus();
       return;
     }
 
@@ -60,6 +67,7 @@ export default function Home() {
       })
       .on("end", () => {
         setIsPending(false);
+        inputRef.current?.focus();
       });
   }
 
@@ -92,8 +100,12 @@ export default function Home() {
         </select>
         <button
           type="button"
-          onClick={() => setMessages([])}
+          onClick={() => {
+            setMessages([])
+            inputRef.current?.focus();
+          }}
           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
+          aria-label="Clear conversation"
         >
           Clear
         </button>
@@ -105,7 +117,7 @@ export default function Home() {
           <p className="text-gray-500 mb-4">How can I help you today?</p>
         </div>
       }
-      
+
       {messages.length === 0 && prompt === "" && (
         <SuggestionList
           suggestions={DEFAULT_SUGGESTIONS}
@@ -113,12 +125,22 @@ export default function Home() {
         />
       )}
 
-      <div className="flex-1 overflow-auto">
+      <div className="flex-1 overflow-auto"
+        role="log"
+        aria-live="polite"
+        aria-atomic="false"
+      >
         <MessageList messages={messages} />
       </div>
 
       <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
+        <label htmlFor="chat-input" className="sr-only">
+          Type your message
+        </label>
         <input
+          id="chat-input"
+          ref={inputRef}
+          aria-label="Type your message"
           className="flex-1 border rounded p-2"
           placeholder="Ask anything..."
           value={prompt}
@@ -129,6 +151,7 @@ export default function Home() {
           type="submit"
           disabled={isPending}
           className="bg-blue-600 text-white px-4 rounded"
+          aria-label="Send message"
         >
           {isPending ? "…" : "Send"}
         </button>
