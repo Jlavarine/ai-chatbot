@@ -5,6 +5,8 @@ import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 import { MessageList } from "../components/MessageList";
 import type { Message } from "../components/MessageBubble";
 import { SuggestionList } from "../components/SuggestionList";
+import { ChatControls } from "@/components/ChatControls";
+import { ChatInput } from "@/components/ChatInput";
 
 const MODEL_OPTIONS = [
   "mistralai/Mistral-7B-Instruct-v0.2",
@@ -27,7 +29,7 @@ export default function Home() {
   const [error, setError] = useState<string | null>(null);
 
 
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null!);
 
   useEffect(() => {
     if(!isPending) {
@@ -100,37 +102,19 @@ export default function Home() {
     sendMessage(text);
   },[sendMessage])
 
+  const clearConversation = useCallback(() => {
+    setMessages([]);
+    setError(null);
+  }, []);
+
   return (
     <main className="flex flex-col h-screen p-6 max-w-3xl mx-auto">
-      <div className="mb-4 flex items-center gap-2">
-        <label htmlFor="model" className="font-semibold">
-          Model:
-        </label>
-        <select
-          id="model"
-          value={selectedModel}
-          onChange={(e) => setSelectedModel(e.target.value)}
-          className="border rounded p-1 flex-1"
-        >
-          {MODEL_OPTIONS.map((m) => (
-            <option key={m} value={m}>
-              {m}
-            </option>
-          ))}
-        </select>
-        <button
-          type="button"
-          onClick={() => {
-            setMessages([])
-            setError(null)
-            inputRef.current?.focus();
-          }}
-          className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-          aria-label="Clear conversation"
-        >
-          Clear chat history
-        </button>
-      </div>
+      <ChatControls
+        modelOptions={MODEL_OPTIONS}
+        selectedModel={selectedModel}
+        onChangeModel={setSelectedModel}
+        onClear={clearConversation}
+      />
 
       {messages.length === 0 &&
         <div>
@@ -163,31 +147,14 @@ export default function Home() {
             {error}
           </div>
         )}
-
-        <form onSubmit={handleSubmit} className="flex gap-2 mt-4" autoComplete="off">
-          <label htmlFor="chat-input" className="sr-only">
-            Type your message
-          </label>
-          <input
-            id="chat-input"
-            ref={inputRef}
-            aria-label="Type your message"
-            autoComplete="off"
-            className="flex-1 border rounded p-2"
-            placeholder="Ask anything..."
-            value={prompt}
-            onChange={(e) => setPrompt(e.target.value)}
-            disabled={isPending}
-          />
-          <button
-            type="submit"
-            disabled={isPending}
-            className="bg-blue-600 text-white px-4 rounded"
-            aria-label="Send message"
-          >
-            {isPending ? "…" : "Send"}
-          </button>
-        </form>
+        <ChatInput
+        prompt={prompt}
+        onPromptChange={setPrompt}
+        onSubmit={handleSubmit}
+        isPending={isPending}
+        inputRef={inputRef}
+      />
+        
       </div>
     </main>
   );
