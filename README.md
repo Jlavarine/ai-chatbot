@@ -16,22 +16,17 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 2. **Install dependencies**  
    ```bash
    npm install
-   # or
-   yarn install
    ```
 
 3. **Configure environment variables**  
    Create a `.env.local` in the project root with:  
    ```bash
-   NEXT_PUBLIC_API_BASE=/api
    TOGETHER_API_KEY=your_together_ai_key
    ```
 
 4. **Run in development**  
    ```bash
    npm run dev
-   # or
-   yarn dev
    ```
    Open 👉 http://localhost:3000 to view.
 
@@ -47,7 +42,7 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 
 - **Models**  
   - `mistralai/Mistral-7B-Instruct-v0.2`: Instruction-following, reasoning-focused model.  
-  - `google/gemma-2b-it`: General-purpose conversational language model that uses an optimized transformer architecture.  
+  - `Llama-3.2-11B-Vision-Instruct-Turbo`: General-purpose conversational language model that uses an optimized transformer architecture.  
 
 - **API / Streaming**  
   - **Together AI Streaming API**:  
