@@ -28,7 +28,7 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
    ```bash
    npm run dev
    ```
-   Open 👉 http://localhost:3000 to view.
+   Open http://localhost:3000 to view.
 
 5. **Build for production**  
    ```bash
@@ -79,8 +79,8 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 
 ```
 ├── components/
-│   ├── ChatControls.tsx     # Model selector + clear chat UI
-│   ├── ChatInput.tsx        # Bottom form/input + send button
+│   ├── ChatControls.tsx     # Model selector
+│   ├── ChatInput.tsx        # Bottom form/input + send button + clear chat UI
 │   ├── ModelSelector.tsx    # Custom dropdown for models
 │   └── MessageList.tsx      # Renders messages array
 │
