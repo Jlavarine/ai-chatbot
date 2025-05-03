@@ -155,6 +155,7 @@ export default function Home() {
           onSubmit={handleSubmit}
           isPending={isPending}
           inputRef={inputRef}
+          noMessages={messages.length}
         />
 
       </div>

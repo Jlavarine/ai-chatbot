@@ -9,6 +9,7 @@ interface ChatInputProps {
   onClear: () => void;
   isPending: boolean;
   inputRef: RefObject<HTMLInputElement>;
+  noMessages: number
 }
 
 export const ChatInput: FC<ChatInputProps> = ({
@@ -17,7 +18,8 @@ export const ChatInput: FC<ChatInputProps> = ({
   onSubmit,
   isPending,
   inputRef,
-  onClear
+  onClear,
+  noMessages
 }) => (
   <form
     onSubmit={onSubmit}
@@ -47,13 +49,14 @@ export const ChatInput: FC<ChatInputProps> = ({
     >
       {isPending ? "…" : "Send"}
     </button>
-    <button
+    {noMessages ? <button
       type="button"
       onClick={onClear}
       className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
       aria-label="Clear conversation"
+      disabled={!noMessages}
     >
       Clear chat
-    </button>
+    </button>: null}
   </form>
 );
