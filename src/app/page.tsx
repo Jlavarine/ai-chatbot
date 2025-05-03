@@ -55,7 +55,7 @@ export default function Home() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ messages: history, model: selectedModel }),
       });
-    } catch (networkErr: any) {
+    } catch (networkErr: unknown) {
       console.error("Network error:", networkErr);
       setError("Network error – please check your connection and try again.");
       setIsPending(false);
