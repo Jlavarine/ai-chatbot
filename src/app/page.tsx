@@ -4,7 +4,7 @@ import { FormEvent, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 import { MessageList } from "../components/MessageList";
 import type { Message } from "../components/MessageBubble";
-import { SuggestionList } from "@/components/SuggestionList";
+import { SuggestionList } from "../components/SuggestionList";
 
 export default function Home() {
   const MODEL_OPTIONS = [
@@ -16,18 +16,17 @@ export default function Home() {
     "What are Newton's Laws and examples of each?",
     "What are the rules for professional cricket?",
     "What are some quick one pot meals for a family of 4?",
-    "What is the weather in San Francisco?",
+    "What is the weather in San Francisco like in July?",
   ];
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [prompt, setPrompt] = useState("");
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, setIsPending] = useState(false);
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (!prompt.trim()) return;
+  async function sendMessage(text: string) {
+    if (!text.trim()) return;
 
-    const history = [...messages, { role: "user", content: prompt }];
+    const history = [...messages, { role: "user", content: text }];
     setMessages(history);
     setPrompt("");
     setIsPending(true);
@@ -64,8 +63,13 @@ export default function Home() {
       });
   }
 
-  function handlePick(text: string) {
-    setPrompt(text);
+  function handleSubmit(e: FormEvent) {
+    e.preventDefault();
+    sendMessage(prompt);
+  }
+
+  function handlePickSuggestion(text: string) {
+    sendMessage(text);
   }
 
   return (
@@ -95,13 +99,20 @@ export default function Home() {
         </button>
       </div>
 
-      <h1 className="text-2xl font-bold mb-2">Hello there!</h1>
-      <p className="text-gray-500 mb-4">How can I help you today?</p>
+      {messages.length === 0 &&
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Hello there!</h1>
+          <p className="text-gray-500 mb-4">How can I help you today?</p>
+        </div>
+      }
+      
+      {messages.length === 0 && prompt === "" && (
+        <SuggestionList
+          suggestions={DEFAULT_SUGGESTIONS}
+          onPick={handlePickSuggestion}
+        />
+      )}
 
-      <SuggestionList
-        suggestions={DEFAULT_SUGGESTIONS}
-        onPick={handlePick}
-      />
       <div className="flex-1 overflow-auto">
         <MessageList messages={messages} />
       </div>
@@ -109,7 +120,7 @@ export default function Home() {
       <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
         <input
           className="flex-1 border rounded p-2"
-          placeholder="Say something…"
+          placeholder="Ask anything..."
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           disabled={isPending}
