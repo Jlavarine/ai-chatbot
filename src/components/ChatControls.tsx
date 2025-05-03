@@ -25,7 +25,7 @@ export const ChatControls: FC<ChatControlsProps> = ({
                 className="w-full appearance-none bg-gray-800 text-white border border-gray-600 rounded-md px-4 py-2 pr-10 focus:outline-none focus:ring-2 focus:ring-blue-500"
             >
                 {modelOptions.map((opt) => (
-                    <option key={opt} className="bg-gray-800 text-white">
+                    <option className="bg-gray-800 text-white">
                         {opt}
                     </option>
                 ))}

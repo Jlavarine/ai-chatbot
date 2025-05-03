@@ -6,15 +6,12 @@ const together = new Together({
   apiKey: process.env.TOGETHER_API_KEY!,
 });
 
-interface RequestBody {
-  messages: Together.Chat.Completions.CompletionCreateParams.Message[];
-  model: string;
-}
-
 export async function POST(req: Request) {
   try {
-    const body: RequestBody = await req.json();
-    const { messages, model } = body;
+    const { messages, model } = (await req.json()) as {
+      messages: Together.Chat.Completions.CompletionCreateParams.Message[];
+      model: string;
+    };
 
     const response = await together.chat.completions.create({
       model,
@@ -23,16 +20,10 @@ export async function POST(req: Request) {
     });
 
     return new Response(response.toReadableStream());
-  } catch (err: unknown) {
-    const errorMessage =
-      err instanceof Error ? err.message : "An unexpected error occurred";
-
-    return new Response(
-      JSON.stringify({ error: errorMessage }),
-      {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      }
-    );
+  } catch (err: any) {
+    return new Response(JSON.stringify({ error: err.message }), {
+      status: 500,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
