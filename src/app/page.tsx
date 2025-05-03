@@ -88,10 +88,11 @@ export default function Home() {
             model: selectedModel,
           };
           const last = prev[prev.length - 1];
-          if (last.role === "assistant") {
+          if (last && last.role === "assistant") {
             return [...prev.slice(0, -1), bot];
+          } else{
+            return [...prev, bot];
           }
-          return [...prev, bot];
         });
       })
       .on("end", () => {

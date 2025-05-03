@@ -34,7 +34,7 @@ export const ChatInput: FC<ChatInputProps> = ({
       name="chat-input"
       ref={inputRef}
       aria-label="Type your message"
-      className="flex-1 border rounded py-2"
+      className="flex-1 border rounded py-2 pl-2"
       placeholder="Ask anything..."
       value={prompt}
       onChange={(e) => onPromptChange(e.target.value)}
