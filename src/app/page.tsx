@@ -41,28 +41,35 @@ export default function Home() {
     if (!text.trim()) return;
 
     setError(null);
-
-
-    const history = [...messages, { role: "user", content: text }];
+  
+    const userMsg: Message = { role: "user", content: text, model: selectedModel };
+    const history = [...messages, userMsg];
     setMessages(history);
     setPrompt("");
     setIsPending(true);
-
+  
+    const payloadMessages: { role: Message["role"]; content: string }[] = history.map(
+      ({ role, content }) => ({ role, content })
+    );
+  
     let res: Response;
     try {
       res = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: history, model: selectedModel }),
+        body: JSON.stringify({
+          messages: payloadMessages,
+          model: selectedModel,
+        }),
       });
     } catch (networkErr: any) {
-      console.error("Network error:", networkErr);
-      setError("Network error – please check your connection and try again.");
+      console.error("Network error:", networkErr.message);
+      setError(`Network error – ${networkErr.message}`);
       setIsPending(false);
       inputRef.current?.focus();
       return;
     }
-
+  
     if (!res.ok || !res.body) {
       const textErr = await res.text().catch(() => "Unknown server error");
       console.error("Chat API error:", textErr);
@@ -71,7 +78,7 @@ export default function Home() {
       inputRef.current?.focus();
       return;
     }
-
+  
     ChatCompletionStream.fromReadableStream(res.body)
       .on("content", (_delta, full) => {
         setMessages((prev) => {
@@ -81,7 +88,7 @@ export default function Home() {
             model: selectedModel,
           };
           const last = prev[prev.length - 1];
-          if (last?.role === "assistant") {
+          if (last.role === "assistant") {
             return [...prev.slice(0, -1), bot];
           }
           return [...prev, bot];
@@ -92,6 +99,7 @@ export default function Home() {
         inputRef.current?.focus();
       });
   }
+  
 
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
