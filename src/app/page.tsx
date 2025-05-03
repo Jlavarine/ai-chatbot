@@ -4,11 +4,19 @@ import { FormEvent, useState } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 import { MessageList } from "../components/MessageList";
 import type { Message } from "../components/MessageBubble";
+import { SuggestionList } from "@/components/SuggestionList";
 
 export default function Home() {
   const MODEL_OPTIONS = [
     "google/gemma-2b-it",
     "mistralai/Mistral-7B-Instruct-v0.2"
+  ];
+
+  const DEFAULT_SUGGESTIONS = [
+    "What are Newton's Laws and examples of each?",
+    "What are the rules for professional cricket?",
+    "What are some quick one pot meals for a family of 4?",
+    "What is the weather in San Francisco?",
   ];
   const [selectedModel, setSelectedModel] = useState(MODEL_OPTIONS[0]);
   const [prompt, setPrompt] = useState("");
@@ -56,6 +64,10 @@ export default function Home() {
       });
   }
 
+  function handlePick(text: string) {
+    setPrompt(text);
+  }
+
   return (
     <main className="flex flex-col h-screen p-6 max-w-xl mx-auto">
       <div className="mb-4 flex items-center gap-2">
@@ -83,6 +95,13 @@ export default function Home() {
         </button>
       </div>
 
+      <h1 className="text-2xl font-bold mb-2">Hello there!</h1>
+      <p className="text-gray-500 mb-4">How can I help you today?</p>
+
+      <SuggestionList
+        suggestions={DEFAULT_SUGGESTIONS}
+        onPick={handlePick}
+      />
       <div className="flex-1 overflow-auto">
         <MessageList messages={messages} />
       </div>
