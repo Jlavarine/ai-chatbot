@@ -11,7 +11,7 @@ export function MessageBubble({ role, content, model }: Message) {
   return (
     <div className={`flex ${isUser ? "justify-end" : "justify-start"}`}>
       <div
-        className={`max-w-xs p-3 rounded-lg ${
+        className={`max-w-lg p-3 rounded-lg ${
           isUser
             ? "bg-blue-600 text-white"
             : "bg-gray-200 text-gray-900"

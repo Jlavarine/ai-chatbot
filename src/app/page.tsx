@@ -81,7 +81,7 @@ export default function Home() {
   }
 
   return (
-    <main className="flex flex-col h-screen p-6 max-w-xl mx-auto">
+    <main className="flex flex-col h-screen p-6 max-w-3xl mx-auto">
       <div className="mb-4 flex items-center gap-2">
         <label htmlFor="model" className="font-semibold">
           Model:
@@ -118,13 +118,6 @@ export default function Home() {
         </div>
       }
 
-      {messages.length === 0 && prompt === "" && (
-        <SuggestionList
-          suggestions={DEFAULT_SUGGESTIONS}
-          onPick={handlePickSuggestion}
-        />
-      )}
-
       <div className="flex-1 overflow-auto"
         role="log"
         aria-live="polite"
@@ -133,6 +126,13 @@ export default function Home() {
         <MessageList messages={messages} />
       </div>
 
+      <div>
+      {messages.length === 0 && prompt === "" && (
+        <SuggestionList
+          suggestions={DEFAULT_SUGGESTIONS}
+          onPick={handlePickSuggestion}
+        />
+      )}
       <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
         <label htmlFor="chat-input" className="sr-only">
           Type your message
@@ -146,16 +146,17 @@ export default function Home() {
           value={prompt}
           onChange={(e) => setPrompt(e.target.value)}
           disabled={isPending}
-        />
+          />
         <button
           type="submit"
           disabled={isPending}
           className="bg-blue-600 text-white px-4 rounded"
           aria-label="Send message"
-        >
+          >
           {isPending ? "…" : "Send"}
         </button>
       </form>
+      </div>
     </main>
   );
 }
