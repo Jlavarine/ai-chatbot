@@ -1,14 +1,14 @@
 "use client";
 
-import { FormEvent, useState, useRef, useEffect } from "react";
+import { FormEvent, useState, useRef, useEffect, useCallback } from "react";
 import { ChatCompletionStream } from "together-ai/lib/ChatCompletionStream";
 import { MessageList } from "../components/MessageList";
 import type { Message } from "../components/MessageBubble";
 import { SuggestionList } from "../components/SuggestionList";
 
 const MODEL_OPTIONS = [
-  "google/gemma-2b-it",
-  "mistralai/Mistral-7B-Instruct-v0.2"
+  "mistralai/Mistral-7B-Instruct-v0.2",
+  "google/gemma-2b-it"
 ];
 
 const DEFAULT_SUGGESTIONS = [
@@ -30,8 +30,10 @@ export default function Home() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    inputRef.current?.focus();
-  }, []);
+    if(!isPending) {
+      inputRef.current?.focus();
+    }
+  }, [isPending]);
 
   async function sendMessage(text: string) {
     if (!text.trim()) return;
@@ -89,14 +91,14 @@ export default function Home() {
       });
   }
 
-  function handleSubmit(e: FormEvent) {
+  const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
     sendMessage(prompt);
-  }
+  },[prompt, sendMessage])
 
-  function handlePickSuggestion(text: string) {
+  const handlePickSuggestion = useCallback((text: string) => {
     sendMessage(text);
-  }
+  },[sendMessage])
 
   return (
     <main className="flex flex-col h-screen p-6 max-w-3xl mx-auto">
@@ -126,7 +128,7 @@ export default function Home() {
           className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
           aria-label="Clear conversation"
         >
-          Clear
+          Clear chat history
         </button>
       </div>
 
@@ -162,7 +164,7 @@ export default function Home() {
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="flex gap-2 mt-4">
+        <form onSubmit={handleSubmit} className="flex gap-2 mt-4" autoComplete="off">
           <label htmlFor="chat-input" className="sr-only">
             Type your message
           </label>
@@ -170,6 +172,7 @@ export default function Home() {
             id="chat-input"
             ref={inputRef}
             aria-label="Type your message"
+            autoComplete="off"
             className="flex-1 border rounded p-2"
             placeholder="Ask anything..."
             value={prompt}
