@@ -1,7 +1,7 @@
 # AI Chat App
 
 A lightweight Next.js “chat” interface powered by Together AI’s streaming API, built with React and Tailwind CSS.  
-Allows the user to pick between multiple LLMs, send messages, and see streaming responses—complete with model selector, and clear-conversation functionality.
+Allows the user to pick between multiple LLMs, send messages, and see streaming responses—complete with model selector, chat copying, and clear conversation functionality.
 
 ---
 
@@ -38,6 +38,11 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 
 ---
 
+## Deployed Site
+
+The AI Chatbot application is live and accessible [here](https://ai-chatbot-amber-nu.vercel.app/).
+
+
 ## Models / APIs Used
 
 - **Models**  
@@ -55,7 +60,8 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 
 - **Streaming Chat**: Real-time assistant replies via stream.  
 - **Multi-Model Selector**: Custom dropdown to switch LLMs.  
-- **Clear Conversation**: Reset chat and errors.  
+- **Clear Conversation**: Reset chat and errors.
+- **Copy Entire Chat or Individual responses**:   Instantly copy the full conversation as Markdown with the “Copy Chat” button, or click the clipboard icon under any reply to copy just that response.
 - **Error Handling**: Inline banner for network or API failures.  
 - **Accessibility**: Focus management and ARIA attributes.  
 
@@ -64,13 +70,13 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 ## 🚂 Time Spent & Trade-offs / Limitations
 
 - **Time Spent**:  
-  - Total development time: ~8 hours.  
-  - Key tasks: initial setup, streaming integration (3h), UI/UX refinements (2h), accessibility & error handling (1.5h), theming & toggles (1.5h).
+  - Total development time: ~10.5 hours.  
+  - Key tasks: initial setup, streaming integration (3.5h), UI/UX refinements (4h), accessibility & error handling (1.5h), theming & toggles (1.5h).
 
 - **Trade-offs & Limitations**:  
   - **Basic styling**: Tailwind-only, minimal custom design system.  
   - **Single-page focus**: No routing or state persistence beyond session.  
-  - **Environment dependency**: Assumes a Together AI API key and endpoint—no fallback mock.  
+  - **Environment dependency**: Assumes a Together AI API key and endpoint.  
   - **Performance**: Chat history grows unbounded in memory; no pagination or lazy loading for long sessions.
 
 ---
@@ -98,6 +104,10 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 ├── package.json
 └── README.md
 ```
+## ➕ Future Improvements
+
+- **Response Rating**: Add thumbs up/down buttons on each AI reply so users can rate the usefulness of individual responses.  
+- **Chat Persistence & History**: Hook up a backend database to store complete conversation histories, enabling users to revisit past chats across sessions.
 
 ---
 
@@ -106,8 +116,6 @@ Allows the user to pick between multiple LLMs, send messages, and see streaming 
 - `npm run dev` — Start Next.js in development mode  
 - `npm run build` — Create a production build  
 - `npm run start` — Run the production build locally  
-- `npm run lint` — Run ESLint  
-- `npm run format` — Run Prettier  
 
 ---
 
