@@ -38,7 +38,7 @@ export default function Home() {
     }
   }, [isPending]);
 
-  async function sendMessage(text: string) {
+  const sendMessage = async (text: string) => {
     if (!text.trim()) return;
 
     setError(null);
@@ -173,7 +173,7 @@ export default function Home() {
         aria-live="polite"
         aria-atomic="false"
       >
-        <MessageList messages={messages} />
+        <MessageList messages={messages} isPending={isPending}/>
       </div>
 
       <div>

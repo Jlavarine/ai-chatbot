@@ -8,7 +8,11 @@ export type Message = {
   model?: string;
 };
 
-export function MessageBubble({ role, content, model }: Message) {
+interface MessageBubbleProps extends Message {
+    isPending: boolean;
+};
+
+export function MessageBubble({ role, content, model, isPending }: MessageBubbleProps) {
   const isUser = role === "user";
   const [copied, setCopied] = useState(false);
 
@@ -39,7 +43,7 @@ export function MessageBubble({ role, content, model }: Message) {
           </div>
         )}
         <div>{content}</div>
-          <button
+          {!isPending ? <button
             onClick={copyToClipboard}
             aria-label="Copy response"
             className="mt-2 p-1 rounded hover:bg-black-200"
@@ -50,7 +54,7 @@ export function MessageBubble({ role, content, model }: Message) {
                 Copied!
               </span>
             )}
-          </button>
+          </button>: null}
       </div>
     </div>
   );

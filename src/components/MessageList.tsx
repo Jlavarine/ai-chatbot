@@ -3,9 +3,10 @@ import { MessageBubble, Message } from "./MessageBubble";
 
 interface Props {
     messages: Message[];
+    isPending: boolean;
 }
 
-export function MessageList({ messages }: Props) {
+export function MessageList({ messages, isPending }: Props) {
     const containerRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
@@ -26,6 +27,7 @@ export function MessageList({ messages }: Props) {
                     role={m.role}
                     content={m.content}
                     model={m.model}
+                    isPending={isPending}
                 />
             ))}
         </div>
