@@ -49,12 +49,12 @@ export const ChatInput: FC<ChatInputProps> = ({
     >
       {isPending ? "…" : "Send"}
     </button>
-    {noMessages ? <button
+    {noMessages && !isPending ? <button
       type="button"
       onClick={onClear}
       className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded"
       aria-label="Clear conversation"
-      disabled={!noMessages}
+      disabled={!noMessages || isPending}
     >
       Clear chat
     </button>: null}

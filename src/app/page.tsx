@@ -27,6 +27,7 @@ export default function Home() {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isPending, setIsPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [copiedChat, setCopiedChat] = useState(false);
 
 
   const inputRef = useRef<HTMLInputElement>(null!);
@@ -41,17 +42,17 @@ export default function Home() {
     if (!text.trim()) return;
 
     setError(null);
-  
+
     const userMsg: Message = { role: "user", content: text, model: selectedModel };
     const history = [...messages, userMsg];
     setMessages(history);
     setPrompt("");
     setIsPending(true);
-  
+
     const payloadMessages: { role: Message["role"]; content: string }[] = history.map(
       ({ role, content }) => ({ role, content })
     );
-  
+
     let res: Response;
     try {
       res = await fetch("/api/chat", {
@@ -69,7 +70,7 @@ export default function Home() {
       inputRef.current?.focus();
       return;
     }
-  
+
     if (!res.ok || !res.body) {
       const textErr = await res.text().catch(() => "Unknown server error");
       console.error("Chat API error:", textErr);
@@ -78,7 +79,7 @@ export default function Home() {
       inputRef.current?.focus();
       return;
     }
-  
+
     ChatCompletionStream.fromReadableStream(res.body)
       .on("content", (_delta, full) => {
         setMessages((prev) => {
@@ -90,7 +91,7 @@ export default function Home() {
           const last = prev[prev.length - 1];
           if (last && last.role === "assistant") {
             return [...prev.slice(0, -1), bot];
-          } else{
+          } else {
             return [...prev, bot];
           }
         });
@@ -100,7 +101,7 @@ export default function Home() {
         inputRef.current?.focus();
       });
   }
-  
+
 
   const handleSubmit = useCallback((e: FormEvent) => {
     e.preventDefault();
@@ -116,6 +117,22 @@ export default function Home() {
     setError(null);
   }, []);
 
+  const generateMarkdown = () => {
+    return messages
+      .map((m) =>
+        m.role === "user"
+          ? `**You:** ${m.content}`
+          : `**Bot (${m.model || "AI"}):** ${m.content}`
+      )
+      .join("\n\n");
+  }
+
+  const copyChat = async () => {
+    await navigator.clipboard.writeText(generateMarkdown());
+    setCopiedChat(true);
+    setTimeout(() => setCopiedChat(false), 1500);
+  }
+
   return (
     <main className="flex flex-col h-screen p-6 max-w-3xl mx-auto">
       <ChatControls
@@ -123,6 +140,24 @@ export default function Home() {
         selectedModel={selectedModel}
         onChangeModel={setSelectedModel}
       />
+
+      {messages.length && !isPending ? <div className="mt-4 flex gap-4">
+        <div className="flex flex-col items-start">
+          <button
+            type="button"
+            onClick={copyChat}
+            disabled={isPending}
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 pb-1 rounded"
+          >
+            Copy Entire Chat
+          </button>
+          {copiedChat && (
+            <span className="text-xs text-green-600">
+              Copied!
+            </span>
+          )}
+        </div>
+      </div> : null}
 
       {messages.length === 0 &&
         <div>
