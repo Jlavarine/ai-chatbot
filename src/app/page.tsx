@@ -147,7 +147,7 @@ export default function Home() {
             type="button"
             onClick={copyChat}
             disabled={isPending}
-            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 pb-1 rounded"
+            className="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 pb-1 mb-4 ml-2 rounded"
           >
             Copy Entire Chat
           </button>
